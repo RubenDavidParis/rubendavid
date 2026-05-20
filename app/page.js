@@ -25,7 +25,7 @@ export default function Home() {
         maxWidth: "900px"
       }}>
         <img
-          src="/transmissions.jpg"
+          src="/public/transmissions.jpg"
           alt="Transmissions"
           style={{
             width: "100%",
