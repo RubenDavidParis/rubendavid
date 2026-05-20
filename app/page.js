@@ -55,7 +55,7 @@ export default function Home() {
           fontSize: "24px",
           fontWeight: "bold"
         }}>
-          Original disponible · 650€
+          Original disponible : 950€
         </p>
       </div>
     </main>
