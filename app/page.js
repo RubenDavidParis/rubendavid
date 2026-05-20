@@ -82,7 +82,7 @@ export default function Home() {
               borderRadius: "999px",
               fontSize: "16px"
             }}>
-              Demander cette œuvre
+              Acquérir cette œuvre
             </a>
           </div>
 
@@ -93,7 +93,7 @@ export default function Home() {
             boxShadow: "0 25px 70px rgba(0,0,0,0.12)"
           }}>
             <img
-              src="/public/transmissions.jpg"
+              src="/transmissions.jpg"
               alt="Transmissions"
               style={{
                 width: "100%",
