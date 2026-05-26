@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ruben David — Peintre</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Cinzel:wght@400;500&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --noir: #0d0b09;
+  --encre: #1c1712;
+  --or: #c9a84c;
+  --or-pale: #e8d5a0;
+  --creme: #f5f0e8;
+  --parchemin: #ede5d4;
+  --gris: #8a8278;
+  --texte: #2a2318;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--noir);
+  color: var(--creme);
+  font-family: 'Lato', sans-serif;
+  font-weight: 300;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* Curseur personnalisé */
+.cursor {
+  width: 8px; height: 8px;
+  background: var(--or);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s, width 0.3s, height 0.3s, opacity 0.3s;
+  mix-blend-mode: difference;
+}
+.cursor-ring {
+  width: 36px; height: 36px;
+  border: 1px solid rgba(201,168,76,0.5);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: transform 0.15s ease-out, width 0.3s, height 0.3s;
+}
+.cursor.hover { width: 16px; height: 16px; }
+.cursor-ring.hover { width: 60px; height: 60px; border-color: var(--or); }
+
+/* Grain overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9997;
+  opacity: 0.7;
+}
+
+/* ── NAVIGATION ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem 4rem;
+  background: linear-gradient(to bottom, rgba(13,11,9,0.9) 0%, transparent 100%);
+}
+
+.nav-logo {
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.35em;
+  color: var(--or);
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.nav-links {
+  display: flex;
+  gap: 3rem;
+  list-style: none;
+}
+
+.nav-links a {
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(245,240,232,0.55);
+  text-decoration: none;
+  transition: color 0.3s;
+  font-weight: 400;
+}
+.nav-links a:hover { color: var(--or); }
+
+/* ── HERO ── */
+.hero {
+  height: 100vh;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 2s ease;
+  transform: scale(1.05);
+  animation: slowzoom 12s ease infinite alternate;
+}
+.hero-slide.active { opacity: 1; }
+
+@keyframes slowzoom {
+  from { transform: scale(1.05); }
+  to { transform: scale(1); }
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(13,11,9,0.85) 0%,
+    rgba(13,11,9,0.5) 50%,
+    rgba(13,11,9,0.2) 100%
+  ),
+  linear-gradient(
+    to top,
+    rgba(13,11,9,0.9) 0%,
+    transparent 60%
+  );
+}
+
+.hero-content {
+  position: relative;
+  z-index: 10;
+  padding: 0 4rem 6rem;
+  max-width: 700px;
+}
+
+.hero-eyebrow {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.4em;
+  color: var(--or);
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeUp 1s ease 0.3s forwards;
+}
+
+.hero-title {
+  font-family: 'EB Garamond', serif;
+  font-size: clamp(4rem, 9vw, 8rem);
+  font-weight: 400;
+  line-height: 0.9;
+  color: var(--creme);
+  margin-bottom: 2rem;
+  opacity: 0;
+  animation: fadeUp 1s ease 0.6s forwards;
+}
+
+.hero-title em {
+  font-style: italic;
+  color: var(--or-pale);
+  display: block;
+}
+
+.hero-sub {
+  font-size: 0.9rem;
+  line-height: 1.9;
+  color: rgba(245,240,232,0.6);
+  max-width: 420px;
+  margin-bottom: 3rem;
+  opacity: 0;
+  animation: fadeUp 1s ease 0.9s forwards;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  opacity: 0;
+  animation: fadeUp 1s ease 1.2s forwards;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.btn-primary {
+  display: inline-block;
+  padding: 1rem 2.5rem;
+  background: var(--or);
+  color: var(--noir);
+  text-decoration: none;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  transition: all 0.3s;
+  font-weight: 500;
+}
+.btn-primary:hover {
+  background: var(--or-pale);
+  transform: translateY(-2px);
+}
+
+.btn-ghost {
+  display: inline-block;
+  padding: 1rem 2.5rem;
+  border: 1px solid rgba(201,168,76,0.4);
+  color: var(--or-pale);
+  text-decoration: none;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  transition: all 0.3s;
+}
+.btn-ghost:hover {
+  border-color: var(--or);
+  color: var(--or);
+}
+
+/* Scroll indicator */
+.scroll-hint {
+  position: absolute;
+  bottom: 2.5rem;
+  right: 4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0;
+  animation: fadeUp 1s ease 1.8s forwards;
+}
+.scroll-hint span {
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(245,240,232,0.35);
+  writing-mode: vertical-rl;
+}
+.scroll-line {
+  width: 1px;
+  height: 60px;
+  background: linear-gradient(to bottom, var(--or), transparent);
+  animation: scrollpulse 2s ease infinite;
+}
+@keyframes scrollpulse {
+  0%,100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* ── TRANSMISSIONS — ŒUVRE PHARE ── */
+.transmission-section {
+  background: var(--encre);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+}
+
+.transmission-img {
+  position: relative;
+  overflow: hidden;
+}
+
+.transmission-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.8s ease;
+}
+
+.transmission-img:hover img { transform: scale(1.03); }
+
+.transmission-img::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, transparent 70%, var(--encre) 100%);
+  z-index: 1;
+}
+
+.transmission-content {
+  padding: 6rem 5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.section-eyebrow {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.4em;
+  color: var(--or);
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  font-family: 'EB Garamond', serif;
+  font-size: clamp(2.5rem, 4vw, 4rem);
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--creme);
+  margin-bottom: 0.5rem;
+}
+
+.section-title em {
+  font-style: italic;
+  color: var(--or-pale);
+}
+
+.divider {
+  width: 40px;
+  height: 1px;
+  background: var(--or);
+  margin: 2rem 0;
+}
+
+.transmission-text {
+  font-size: 0.92rem;
+  line-height: 2;
+  color: rgba(245,240,232,0.6);
+  margin-bottom: 1.5rem;
+}
+
+.transmission-text.italic-quote {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--or-pale);
+  border-left: 2px solid var(--or);
+  padding-left: 1.5rem;
+  margin: 2rem 0;
+}
+
+.price-tag {
+  display: inline-block;
+  margin-top: 2rem;
+  padding: 0.6rem 1.5rem;
+  border: 1px solid rgba(201,168,76,0.3);
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  color: var(--or);
+  margin-bottom: 2rem;
+}
+
+/* ── GALERIE ── */
+.gallery-section {
+  background: var(--noir);
+  padding: 8rem 4rem;
+}
+
+.gallery-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.gallery-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 0.3rem;
+  margin-top: 3rem;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 0.6rem 1.8rem;
+  background: transparent;
+  border: 1px solid rgba(201,168,76,0.2);
+  color: var(--gris);
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.tab:hover, .tab.active {
+  background: var(--or);
+  color: var(--noir);
+  border-color: var(--or);
+}
+
+.masonry {
+  columns: 3 280px;
+  column-gap: 1rem;
+  margin-top: 3rem;
+}
+
+.art-card {
+  break-inside: avoid;
+  margin-bottom: 1rem;
+  position: relative;
+  overflow: hidden;
+  background: var(--encre);
+  cursor: none;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.art-card.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.art-card img {
+  width: 100%;
+  display: block;
+  transition: transform 0.8s ease;
+}
+
+.art-card:hover img { transform: scale(1.06); }
+
+.art-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(transparent 40%, rgba(13,11,9,0.92) 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.5rem;
+}
+
+.art-card:hover .art-card-overlay { opacity: 1; }
+
+.art-card-title {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 1.2rem;
+  color: var(--creme);
+  margin-bottom: 0.3rem;
+}
+
+.art-card-meta {
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--or);
+}
+
+.art-card-price {
+  font-size: 0.85rem;
+  color: var(--or-pale);
+  margin-top: 0.5rem;
+}
+
+/* ── BIO ── */
+.bio-section {
+  background: var(--encre);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  min-height: 80vh;
+}
+
+.bio-portraits {
+  position: relative;
+  overflow: hidden;
+}
+
+.bio-portrait-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 100%;
+}
+
+.bio-portrait-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: grayscale(20%);
+  transition: filter 0.5s;
+}
+
+.bio-portrait-grid img:hover { filter: grayscale(0%); }
+
+.bio-content {
+  padding: 6rem 5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: var(--encre);
+}
+
+.bio-text {
+  font-size: 0.92rem;
+  line-height: 2;
+  color: rgba(245,240,232,0.65);
+  margin-bottom: 1.5rem;
+}
+
+.bio-text strong {
+  color: var(--or-pale);
+  font-weight: 400;
+}
+
+.bio-quote {
+  font-family: 'EB Garamond', serif;
+  font-style: italic;
+  font-size: 1.3rem;
+  color: var(--or-pale);
+  line-height: 1.7;
+  border-left: 2px solid var(--or);
+  padding-left: 2rem;
+  margin: 2.5rem 0;
+}
+
+/* ── CONTACT ── */
+.contact-section {
+  background: var(--noir);
+  text-align: center;
+  padding: 10rem 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.contact-section::before {
+  content: 'RUBEN DAVID';
+  position: absolute;
+  font-family: 'Cinzel', serif;
+  font-size: clamp(6rem, 15vw, 14rem);
+  color: rgba(201,168,76,0.04);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  pointer-events: none;
+  letter-spacing: 0.2em;
+}
+
+.contact-email {
+  font-family: 'EB Garamond', serif;
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-style: italic;
+  color: var(--or-pale);
+  text-decoration: none;
+  display: inline-block;
+  margin: 2rem 0 3rem;
+  border-bottom: 1px solid rgba(201,168,76,0.3);
+  padding-bottom: 0.3rem;
+  transition: color 0.3s, border-color 0.3s;
+}
+.contact-email:hover {
+  color: var(--or);
+  border-color: var(--or);
+}
+
+.contact-desc {
+  font-size: 0.9rem;
+  color: rgba(245,240,232,0.45);
+  max-width: 480px;
+  margin: 0 auto 3rem;
+  line-height: 1.9;
+}
+
+.social-links {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.social-link {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gris);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.social-link:hover { color: var(--or); }
+
+/* ── LIGHTBOX ── */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(13,11,9,0.97);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s;
+}
+
+.lightbox.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.lightbox-inner {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 4rem;
+  max-width: 92vw;
+  max-height: 90vh;
+  align-items: center;
+}
+
+.lightbox-img-wrap {
+  max-height: 85vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox-img {
+  max-height: 85vh;
+  max-width: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.lightbox-info { color: var(--creme); }
+
+.lightbox-info h2 {
+  font-family: 'EB Garamond', serif;
+  font-size: 2.2rem;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--creme);
+  margin-bottom: 0.3rem;
+}
+
+.lightbox-info .lb-meta {
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--or);
+  margin-bottom: 1.5rem;
+}
+
+.lightbox-info .lb-desc {
+  font-size: 0.88rem;
+  line-height: 1.9;
+  color: rgba(245,240,232,0.55);
+  margin-bottom: 2rem;
+}
+
+.lightbox-price {
+  font-family: 'EB Garamond', serif;
+  font-size: 2rem;
+  color: var(--or);
+  margin-bottom: 2rem;
+}
+
+.lightbox-close {
+  position: fixed;
+  top: 2.5rem; right: 3rem;
+  background: none;
+  border: none;
+  color: rgba(245,240,232,0.4);
+  font-size: 1.2rem;
+  cursor: none;
+  transition: color 0.2s;
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.1em;
+  font-size: 0.7rem;
+}
+.lightbox-close:hover { color: var(--or); }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--encre);
+  text-align: center;
+  padding: 2.5rem;
+  border-top: 1px solid rgba(201,168,76,0.1);
+}
+
+footer p {
+  font-family: 'Cinzel', serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  color: rgba(245,240,232,0.25);
+  text-transform: uppercase;
+}
+
+footer span { color: var(--or); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  nav { padding: 1.5rem 2rem; }
+  .nav-links { display: none; }
+  .hero-content { padding: 0 2rem 5rem; }
+  .transmission-section,
+  .bio-section { grid-template-columns: 1fr; }
+  .transmission-img { height: 60vw; }
+  .transmission-content,
+  .bio-content { padding: 4rem 2rem; }
+  .gallery-section { padding: 5rem 1.5rem; }
+  .lightbox-inner { grid-template-columns: 1fr; }
+  .lightbox-info { display: none; }
+  .contact-section { padding: 6rem 2rem; }
+  body { cursor: auto; }
+  .cursor, .cursor-ring { display: none; }
+  .scroll-hint { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Ruben David</a>
+  <ul class="nav-links">
+    <li><a href="#transmissions">Transmissions</a></li>
+    <li><a href="#galerie">Galerie</a></li>
+    <li><a href="#artiste">L'Artiste</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg" id="heroBg">
+    <div class="hero-slide active" id="slide0"></div>
+    <div class="hero-slide" id="slide1"></div>
+    <div class="hero-slide" id="slide2"></div>
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Paris · Peinture originale</p>
+    <h1 class="hero-title">
+      Ruben<br>
+      <em>David</em>
+    </h1>
+    <p class="hero-sub">Aquarelliste et dessinateur parisien, Ruben David peint en état de transe — laissant l'invisible se déposer sur le papier.</p>
+    <div class="hero-actions">
+      <a href="#galerie" class="btn-primary">Voir les œuvres</a>
+      <a href="#contact" class="btn-ghost">Acquérir un original</a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    <span>Défiler</span>
+  </div>
+</section>
+
+<!-- TRANSMISSIONS — ŒUVRE PHARE -->
+<section class="transmission-section" id="transmissions">
+  <div class="transmission-img" id="transmissionImgWrap">
+    <img src="" alt="Transmissions — Ruben David" id="transmissionImg">
+  </div>
+  <div class="transmission-content">
+    <p class="section-eyebrow">Œuvre phare · 2024</p>
+    <h2 class="section-title"><em>Transmissions</em></h2>
+    <div class="divider"></div>
+    <p class="transmission-text">
+      Née d'une transe profonde, cette peinture est la mémoire d'une vision mystique. Ruben David y incarne successivement les éléments — l'eau, l'air, le feu — avant de fusionner avec une lumière douce, vivante, presque divine.
+    </p>
+    <p class="transmission-text italic-quote">
+      "Ce que j'ai vécu est vivant en moi, et ce que je partage portera plus loin que je ne peux l'imaginer."
+    </p>
+    <p class="transmission-text">
+      Des mois plus tard, il retourne dans cet espace de présence et laisse l'énergie traverser son bras, sa main, son pinceau. Les lettres hébraïques apparaissent d'elles-mêmes. La lettre <em>Aleph</em> structure la composition — reliant le ciel et la terre.
+    </p>
+    <p class="transmission-text">
+      <strong style="color:var(--or-pale)">Transmissions</strong> est une peinture-relique. Une trace vibrante de l'invisible, transmise à la matière.
+    </p>
+    <div class="price-tag">Print disponible · Original sur demande</div>
+    <a href="#contact" class="btn-primary" style="width:fit-content">Acquérir cette œuvre</a>
+  </div>
+</section>
+
+<!-- GALERIE -->
+<section class="gallery-section" id="galerie">
+  <div class="gallery-header">
+    <p class="section-eyebrow">Collection</p>
+    <h2 class="section-title" style="color:var(--creme)">Œuvres <em>disponibles</em></h2>
+    <div class="divider" style="margin:2rem auto"></div>
+    <div class="gallery-tabs">
+      <button class="tab active" onclick="filter('all',this)">Tout</button>
+      <button class="tab" onclick="filter('aquarelles',this)">Aquarelles</button>
+      <button class="tab" onclick="filter('portraits',this)">Portraits</button>
+      <button class="tab" onclick="filter('dessins',this)">Dessins</button>
+      <button class="tab" onclick="filter('figures',this)">Figures</button>
+    </div>
+  </div>
+  <div class="masonry" id="gallery"></div>
+</section>
+
+<!-- BIO -->
+<section class="bio-section" id="artiste">
+  <div class="bio-portraits">
+    <div class="bio-portrait-grid" id="portraitGrid">
+      <img src="" alt="Portrait" id="portrait1">
+      <img src="" alt="Regard" id="portrait2">
+      <img src="" alt="Vieux sage" id="portrait3" style="grid-column:span 2">
+    </div>
+  </div>
+  <div class="bio-content">
+    <p class="section-eyebrow">L'Artiste</p>
+    <h2 class="section-title">Entre <em>transe</em><br>et maîtrise</h2>
+    <div class="divider"></div>
+    <p class="bio-text">
+      Né à Paris, Ruben David a étudié à l'<strong>École Émile Cohl</strong>, avant de passer quinze ans dans l'animation. La peinture n'a jamais vraiment quitté sa vie — mais elle est restée dans l'ombre, intermittente, cherchant sa voix.
+    </p>
+    <p class="bio-text">
+      Tout bascule lorsqu'il découvre la <strong>transe cognitive</strong> avec la chamane Corine Sombrun. Dans ces états modifiés de conscience, il commence à recevoir des visions d'une intensité rare — des images, des couleurs, des lettres. Il comprend alors qu'il peut en devenir le <strong>traducteur visuel</strong>.
+    </p>
+    <blockquote class="bio-quote">
+      "Je deviens un vaisseau. Un mot apparaît en moi pendant la peinture, et mes mains savent quoi faire."
+    </blockquote>
+    <p class="bio-text">
+      Ses racines juives, longtemps mises à distance, réapparaissent naturellement dans l'œuvre — calligraphies hébraïques, étoile de David, lumière du Buisson Ardent. La spiritualité et la création ne font plus qu'un.
+    </p>
+    <p class="bio-text">
+      Il travaille à l'aquarelle, au fusain et au pastel. Chaque série porte une intention différente — mais toutes partagent la même source : un geste libre, guidé de l'intérieur.
+    </p>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+  <p class="section-eyebrow" style="margin-bottom:1rem">Contact</p>
+  <h2 class="section-title" style="font-size:clamp(2rem,4vw,3.5rem)">
+    Vous souhaitez<br><em>acquérir une œuvre ?</em>
+  </h2>
+  <div class="divider" style="margin:2rem auto"></div>
+  <p class="contact-desc">
+    Pour les originaux (500€ – 950€), les prints de Transmissions, ou simplement échanger sur le travail — écrivez directement.
+  </p>
+  <a href="mailto:contact@rubendavid.art" class="contact-email">contact@rubendavid.art</a>
+  <br>
+  <div class="hero-actions" style="justify-content:center; margin-top:0">
+    <a href="https://www.instagram.com/rubendsellem" class="btn-ghost" target="_blank">Instagram</a>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 <span>Ruben David</span> · Paris · Tous droits réservés</p>
+</footer>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="closeLb()">✕ Fermer</button>
+  <div class="lightbox-inner">
+    <div class="lightbox-img-wrap">
+      <img class="lightbox-img" id="lbImg" src="" alt="">
+    </div>
+    <div class="lightbox-info">
+      <h2 id="lbTitle"></h2>
+      <p class="lb-meta" id="lbMeta"></p>
+      <p class="lb-desc" id="lbDesc"></p>
+      <div class="lightbox-price" id="lbPrice"></div>
+      <a href="#contact" class="btn-primary" onclick="closeLb()">Acquérir cette œuvre</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CURSEUR ──
+const cur = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+document.addEventListener('mousemove', e => {
+  cur.style.left = e.clientX + 'px';
+  cur.style.top = e.clientY + 'px';
+  setTimeout(() => {
+    ring.style.left = e.clientX + 'px';
+    ring.style.top = e.clientY + 'px';
+  }, 80);
+});
+document.querySelectorAll('a, button, .art-card, .tab').forEach(el => {
+  el.addEventListener('mouseenter', () => { cur.classList.add('hover'); ring.classList.add('hover'); });
+  el.addEventListener('mouseleave', () => { cur.classList.remove('hover'); ring.classList.remove('hover'); });
+});
+
+// ── DONNÉES ──
+const works = [
+  { id:1, title:"Stand Ready", cat:"aquarelles", medium:"Aquarelle et crayon sur papier", price:"Sur demande", file:"IMG_2111.jpeg", desc:"Composée autour de l'Étoile de David, cette œuvre a été offerte à l'équipe olympique israélienne. Disponible en print." },
+  { id:2, title:"Vision", cat:"aquarelles", medium:"Aquarelle et encre de Chine", price:"650 €", file:"IMG_1425.jpeg", desc:"Paysage onirique traversé de calligraphies. Aquarelle et encre." },
+  { id:3, title:"Transmissions", cat:"aquarelles", medium:"Aquarelle sur papier", price:"950 €", file:"IMG_1780.jpeg", desc:"Mémoire d'une vision mystique vécue en transe profonde. Œuvre phare de la collection." },
+  { id:4, title:"Possibilités", cat:"aquarelles", medium:"Aquarelle sur papier", price:"700 €", file:"IMG_3015.jpeg", desc:"Figure entre ciel et terre, entre visible et invisible." },
+  { id:5, title:"Embrasement", cat:"aquarelles", medium:"Aquarelle et encre", price:"650 €", file:"IMG_3025.jpeg", desc:"Tension entre chaos organique et flamme intérieure." },
+  { id:6, title:"Envol", cat:"aquarelles", medium:"Aquarelle sur papier", price:"600 €", file:"IMG_3026.jpeg", desc:"Élan chromatique, mouvement vers le haut." },
+  { id:7, title:"Résonances", cat:"aquarelles", medium:"Aquarelle et crayon", price:"750 €", file:"IMG_2064.jpeg", desc:"Architecture abstraite, verticalité et lumière." },
+  { id:8, title:"Spirales", cat:"aquarelles", medium:"Aquarelle et encre", price:"600 €", file:"IMG_3013.jpeg", desc:"Formes en spirale, douceur et fluidité organique." },
+  { id:9, title:"Vortex", cat:"aquarelles", medium:"Aquarelle et encre de Chine", price:"800 €", file:"IMG_3024.jpeg", desc:"Triple vortex, énergie centripète." },
+  { id:10, title:"Onde", cat:"aquarelles", medium:"Aquarelle et crayon", price:"650 €", file:"IMG_3027.jpeg", desc:"Mouvement aquatique, or et bleu en tension." },
+  { id:11, title:"Regard", cat:"portraits", medium:"Huile sur toile", price:"Sur demande", file:"825005f0-2a71-4cd3-a813-71230c1a8c5e.jpeg", desc:"Portrait en gros plan à l'huile, regard intense." },
+  { id:12, title:"L'Enfant", cat:"portraits", medium:"Pastel numérique", price:"Sur demande", file:"IMG_3552.jpeg", desc:"Portrait d'enfant, technique mixte." },
+  { id:13, title:"Le Sage", cat:"portraits", medium:"Pastel numérique", price:"Sur demande", file:"IMG_3553.jpeg", desc:"Portrait expressif d'un vieil homme pensif." },
+  { id:14, title:"Portail", cat:"dessins", medium:"Fusain sur papier", price:"500 €", file:"IMG_2066.jpeg", desc:"Arche monumentale et reflet. Fusain expressif." },
+  { id:15, title:"Masque", cat:"dessins", medium:"Fusain sur papier", price:"500 €", file:"IMG_3029.jpeg", desc:"Figure masquée tourbillonnante au fusain." },
+  { id:16, title:"Fragment", cat:"dessins", medium:"Fusain sur papier", price:"500 €", file:"IMG_2057.jpeg", desc:"Forme en suspension, minimalisme puissant." },
+  { id:17, title:"Séisme", cat:"dessins", medium:"Fusain sur papier", price:"500 €", file:"IMG_2059.jpeg", desc:"Fractures et masses sombres au fusain." },
+  { id:18, title:"Ascension", cat:"dessins", medium:"Fusain sur papier", price:"550 €", file:"IMG_3019.jpeg", desc:"Figure en tension vers le haut." },
+  { id:19, title:"Torse", cat:"dessins", medium:"Fusain sur papier", price:"550 €", file:"IMG_3020.jpeg", desc:"Anatomie fragmentée, fusain puissant." },
+  { id:20, title:"Modèle assise", cat:"figures", medium:"Pastel et crayon", price:"500 €", file:"IMG_3021.jpeg", desc:"Étude de figure au crayon et pastel." },
+  { id:21, title:"Modèle bleu", cat:"figures", medium:"Pastel sur papier", price:"500 €", file:"IMG_3023.jpeg", desc:"Figure féminine en pastel bleu nuit." },
+  { id:22, title:"Énergie", cat:"figures", medium:"Pastel sur papier", price:"550 €", file:"IMG_3033.jpeg", desc:"Corps en mouvement, pastel multicolore." },
+  { id:23, title:"Assise", cat:"figures", medium:"Pastel sur papier", price:"550 €", file:"IMG_3034.jpeg", desc:"Figure assise, palette éclatante." },
+];
+
+// ── BUILD GALLERY ──
+const gallery = document.getElementById('gallery');
+const imgCache = {};
+
+async function loadImg(file) {
+  if (imgCache[file]) return imgCache[file];
+  try {
+    const r = await fetch(`/mnt/user-data/uploads/${file}`);
+    const blob = await r.blob();
+    const url = URL.createObjectURL(blob);
+    imgCache[file] = url;
+    return url;
+  } catch(e) { return ''; }
+}
+
+async function buildGallery() {
+  // Hero slides
+  const heroFiles = ['IMG_2111.jpeg','IMG_1780.jpeg','IMG_3024.jpeg'];
+  for (let i = 0; i < heroFiles.length; i++) {
+    const url = await loadImg(heroFiles[i]);
+    document.getElementById(`slide${i}`).style.backgroundImage = `url('${url}')`;
+  }
+
+  // Transmissions featured
+  const tUrl = await loadImg('IMG_1780.jpeg');
+  document.getElementById('transmissionImg').src = tUrl;
+
+  // Portrait section
+  const p1 = await loadImg('825005f0-2a71-4cd3-a813-71230c1a8c5e.jpeg');
+  const p2 = await loadImg('IMG_3552.jpeg');
+  const p3 = await loadImg('IMG_3553.jpeg');
+  document.getElementById('portrait1').src = p1;
+  document.getElementById('portrait2').src = p2;
+  document.getElementById('portrait3').src = p3;
+
+  // Cards
+  for (let i = 0; i < works.length; i++) {
+    const w = works[i];
+    const card = document.createElement('div');
+    card.className = 'art-card';
+    card.dataset.cat = w.cat;
+    card.innerHTML = `
+      <img src="" alt="${w.title}" loading="lazy">
+      <div class="art-card-overlay">
+        <div class="art-card-title">${w.title}</div>
+        <div class="art-card-meta">${w.medium}</div>
+        <div class="art-card-price">${w.price}</div>
+      </div>
+    `;
+    card.addEventListener('click', () => openLb(w));
+    gallery.appendChild(card);
+
+    // Load image async
+    loadImg(w.file).then(url => {
+      card.querySelector('img').src = url;
+    });
+
+    // Stagger reveal
+    setTimeout(() => {
+      const obs = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting) {
+          card.classList.add('revealed');
+          obs.disconnect();
+        }
+      }, { threshold: 0.1 });
+      obs.observe(card);
+    }, i * 40);
+  }
+}
+
+buildGallery();
+
+// ── FILTER ──
+function filter(cat, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.art-card').forEach(card => {
+    const show = cat === 'all' || card.dataset.cat === cat;
+    card.style.display = show ? 'block' : 'none';
+    if (show) setTimeout(() => card.classList.add('revealed'), 100);
+    else card.classList.remove('revealed');
+  });
+}
+
+// ── LIGHTBOX ──
+function openLb(w) {
+  document.getElementById('lbImg').src = imgCache[w.file] || '';
+  document.getElementById('lbTitle').textContent = w.title;
+  document.getElementById('lbMeta').textContent = w.medium;
+  document.getElementById('lbDesc').textContent = w.desc;
+  document.getElementById('lbPrice').textContent = w.price;
+  document.getElementById('lightbox').classList.add('open');
+}
+
+function closeLb() {
+  document.getElementById('lightbox').classList.remove('open');
+}
+
+document.getElementById('lightbox').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeLb();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+
+// ── HERO SLIDESHOW ──
+let slide = 0;
+const slides = document.querySelectorAll('.hero-slide');
+setInterval(() => {
+  slides[slide].classList.remove('active');
+  slide = (slide + 1) % slides.length;
+  slides[slide].classList.add('active');
+}, 5000);
+</script>
+</body>
+</html>
